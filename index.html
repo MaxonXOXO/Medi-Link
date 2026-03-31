@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medi-Link Kiosk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #f0f4f8;
+            --surface:   #ffffff;
+            --surface2:  #e8f4f8;
+            --blue:      #0077b6;
+            --blue-mid:  #0096c7;
+            --blue-lt:   #caf0f8;
+            --teal:      #0a9396;
+            --teal-lt:   #d0f4f0;
+            --green:     #2d9e6b;
+            --green-lt:  #d4f4e6;
+            --red:       #d62839;
+            --red-lt:    #fde8eb;
+            --amber:     #e07c24;
+            --amber-lt:  #fef0e0;
+            --text:      #1b2d3e;
+            --text2:     #4a6070;
+            --border:    #cce0ec;
+            --shadow:    rgba(0,119,182,0.10);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ─────────────────────────────── */
+        .header {
+            background: var(--blue);
+            padding: 0 36px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .logo { display: flex; align-items: center; gap: 14px; }
+
+        .logo-cross {
+            width: 48px; height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-cross svg { width: 28px; height: 28px; }
+
+        .logo-text h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 26px; color: white; letter-spacing: 0.5px;
+        }
+
+        .logo-text p {
+            font-size: 12px; color: rgba(255,255,255,0.75);
+            letter-spacing: 2px; text-transform: uppercase; margin-top: 1px;
+        }
+
+        .header-right {
+            display: flex; align-items: center; gap: 24px;
+        }
+
+        .status-pill {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px; padding: 6px 16px;
+            font-size: 13px; color: white; font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #4ade80; animation: pulse 2s infinite;
+        }
+
+        .clock {
+            font-size: 22px; font-weight: 800;
+            color: white; font-variant-numeric: tabular-nums;
+        }
+
+        /* ── LAYOUT ──────────────────────────────── */
+        .kiosk-body {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        /* ── CARD BASE ───────────────────────────── */
+        .card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 2px 12px var(--shadow);
+        }
+
+        .card-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 18px 24px 14px;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .card-header-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+
+        .card-header h2 {
+            font-size: 15px; font-weight: 800;
+            color: var(--text); text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── DOCTOR PANEL ────────────────────────── */
+        .doctor-panel {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 0;
+        }
+
+        .doctor-panel .card-header {
+            width: 100%;
+            background: var(--blue-lt);
+            border-radius: 18px 18px 0 0;
+            justify-content: center;
+            border-bottom: 1.5px solid var(--border);
+        }
+
+        .doctor-panel .card-header-icon { background: var(--blue); }
+
+        .doctor-body-area {
+            width: 100%;
+            padding: 20px 24px 0;
+            display: flex;
+            justify-content: center;
+            background: linear-gradient(180deg, #eaf6fb 0%, #ffffff 100%);
+        }
+
+        .doctor-svg-wrapper {
+            width: 200px; height: 240px;
+            position: relative;
+        }
+
+        .doctor-svg-wrapper svg {
+            width: 100%; height: 100%;
+            filter: drop-shadow(0 8px 24px rgba(0,119,182,0.18));
+        }
+
+        .speech-area {
+            width: 100%;
+            padding: 0 20px 20px;
+            background: white;
+            border-radius: 0 0 18px 18px;
+        }
+
+        .speech-bubble {
+            position: relative;
+            margin-top: 12px;
+            background: var(--blue-lt);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 18px;
+            font-size: 15px; line-height: 1.6;
+            color: var(--text); text-align: center;
+            min-height: 70px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--blue-lt);
+        }
+
+        .bubble-idle { color: var(--text2); font-style: italic; font-size: 14px; }
+        .bubble-medicine { color: var(--green); font-weight: 700; }
+        .bubble-doctor { color: var(--red); font-weight: 700; }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 9px; height: 9px;
+            background: var(--blue-mid); border-radius: 50%;
+            margin: 0 3px;
+            animation: typingBounce 1.2s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        .action-badge {
+            display: none;
+            margin-top: 14px;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 16px; font-weight: 800;
+            text-align: center; width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        .action-badge.medicine {
+            display: block;
+            background: var(--green-lt);
+            border: 2px solid var(--green);
+            color: var(--green);
+        }
+
+        .action-badge.doctor {
+            display: block;
+            background: var(--red-lt);
+            border: 2px solid var(--red);
+            color: var(--red);
+        }
+
+        /* ── RIGHT PANEL ─────────────────────────── */
+        .right-panel { display: flex; flex-direction: column; gap: 18px; }
+
+        /* Scan card */
+        .scan-card .card-header { background: var(--surface2); border-radius: 18px 18px 0 0; }
+        .scan-card .card-header-icon { background: var(--teal); }
+
+        .scan-body {
+            padding: 24px 28px;
+            display: flex; align-items: center; gap: 22px;
+        }
+
+        .scan-finger-icon {
+            width: 80px; height: 80px; border-radius: 20px;
+            background: var(--teal-lt);
+            border: 2px solid var(--teal);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px; flex-shrink: 0;
+            animation: scanPulse 2s ease-in-out infinite;
+        }
+
+        .scan-text h3 { font-size: 20px; font-weight: 800; color: var(--text); }
+        .scan-text p { font-size: 15px; color: var(--text2); margin-top: 4px; }
+
+        /* Patient card */
+        .patient-card { display: none; }
+        .patient-card.visible { display: block; }
+        .patient-card .card-header { background: var(--teal-lt); border-radius: 18px 18px 0 0; }
+        .patient-card .card-header-icon { background: var(--teal); }
+
+        .patient-body {
+            padding: 20px 28px 24px;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+
+        .patient-row {
+            display: flex; align-items: center; gap: 16px;
+        }
+
+        .patient-avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--teal));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: white; flex-shrink: 0;
+        }
+
+        .patient-info h3 { font-size: 22px; font-weight: 800; }
+        .patient-info p { font-size: 13px; color: var(--teal); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+        .history-box {
+            background: var(--amber-lt);
+            border: 2px solid var(--amber);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        .history-box .history-label {
+            font-size: 11px; font-weight: 800; color: var(--amber);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .history-box p { font-size: 15px; font-weight: 600; color: #7a4a10; }
+
+        /* Symptom section */
+        .symptom-section { display: none; }
+        .symptom-section.visible { display: block; }
+        .symptom-section .card-header { background: var(--blue-lt); border-radius: 18px 18px 0 0; }
+        .symptom-section .card-header-icon { background: var(--blue); }
+
+        .symptom-body { padding: 20px 24px 24px; }
+
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .symptom-chip {
+            display: flex; align-items: center; gap: 14px;
+            padding: 18px 20px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-size: 17px; font-weight: 700;
+            color: var(--text2);
+            user-select: none;
+            min-height: 70px;
+        }
+
+        .symptom-chip:active { transform: scale(0.97); }
+
+        .symptom-chip:hover {
+            border-color: var(--blue-mid);
+            background: var(--blue-lt);
+            color: var(--blue);
+        }
+
+        .symptom-chip.selected {
+            background: var(--blue-lt);
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .chip-emoji { font-size: 28px; flex-shrink: 0; }
+
+        .chip-check {
+            margin-left: auto;
+            width: 26px; height: 26px; border-radius: 50%;
+            border: 2.5px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.18s;
+        }
+
+        .symptom-chip.selected .chip-check {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: white;
+        }
+
+        .chip-check::after {
+            content: '';
+            display: none;
+        }
+
+        .symptom-chip.selected .chip-check::after {
+            content: '✓';
+            display: block;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        /* Analyze button */
+        .btn-analyze {
+            width: 100%;
+            padding: 22px;
+            background: var(--blue);
+            border: none; border-radius: 16px;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px; font-weight: 800;
+            cursor: pointer; letter-spacing: 0.5px;
+            transition: all 0.2s;
+            box-shadow: 0 6px 20px rgba(0,119,182,0.35);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .btn-analyze:hover { background: var(--blue-mid); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,119,182,0.45); }
+        .btn-analyze:active { transform: translateY(0); }
+        .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ── ESSENTIALS BAR ──────────────────────── */
+        .essentials-bar {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 2px 12px var(--shadow);
+            padding: 20px 28px;
+            display: flex; align-items: center; gap: 18px;
+        }
+
+        .essentials-label {
+            font-size: 13px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--text2); white-space: nowrap;
+        }
+
+        .essentials-btns { display: flex; gap: 14px; flex: 1; }
+
+        .btn-essential {
+            flex: 1; padding: 20px 16px;
+            border: 2px solid var(--border); border-radius: 16px;
+            background: var(--bg); color: var(--text);
+            font-family: 'Nunito', sans-serif; font-size: 18px;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.18s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            min-height: 72px;
+        }
+
+        .btn-essential .ess-icon { font-size: 28px; }
+
+        .btn-essential:hover {
+            border-color: var(--teal); background: var(--teal-lt); color: var(--teal);
+            transform: translateY(-2px); box-shadow: 0 6px 18px rgba(10,147,150,0.2);
+        }
+
+        .btn-essential:active { transform: translateY(0); }
+
+        .btn-reset {
+            padding: 20px 28px; min-height: 72px;
+            border: 2px solid var(--border); border-radius: 16px;
+            background: var(--bg); color: var(--text2);
+            font-family: 'Nunito', sans-serif; font-size: 17px;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.18s; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-reset:hover { border-color: var(--red); background: var(--red-lt); color: var(--red); }
+
+        /* ── FOOTER ──────────────────────────────── */
+        .footer {
+            text-align: center; font-size: 12px;
+            color: var(--text2); letter-spacing: 1px;
+            padding-bottom: 10px; font-weight: 600;
+        }
+
+        /* ── DOCTOR SVG ANIMATION ────────────────── */
+        .doctor-float { animation: doctorFloat 4s ease-in-out infinite; }
+
+        .eye-l { animation: eyeBlink 5s ease-in-out infinite; transform-origin: 86px 120px; }
+        .eye-r { animation: eyeBlink 5s ease-in-out 0.15s infinite; transform-origin: 118px 120px; }
+
+        /* ── KEYFRAMES ───────────────────────────── */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.55; transform: scale(0.85); }
+        }
+
+        @keyframes scanPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(10,147,150,0.35); }
+            50% { box-shadow: 0 0 0 12px rgba(10,147,150,0); }
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        @keyframes doctorFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-9px); }
+        }
+
+        @keyframes eyeBlink {
+            0%, 88%, 100% { transform: scaleY(1); }
+            94% { transform: scaleY(0.08); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card { animation: slideIn 0.4s ease both; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="logo">
+        <div class="logo-cross">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="2" width="8" height="24" rx="3" fill="#0077b6"/>
+                <rect x="2" y="10" width="24" height="8" rx="3" fill="#0077b6"/>
+            </svg>
+        </div>
+        <div class="logo-text">
+            <h1>Medi-Link</h1>
+            <p>Smart Health Kiosk</p>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="status-pill">
+            <div class="pulse-dot"></div>
+            System Online
+        </div>
+        <span class="clock" id="clock">--:--</span>
+    </div>
+</header>
+
+<div class="kiosk-body">
+    <div class="main-grid">
+
+        <!-- ── DOCTOR PANEL ── -->
+        <div class="card doctor-panel">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <span style="font-size:20px;">👨‍⚕️</span>
+                </div>
+                <h2>Dr. Medi · Virtual Doctor</h2>
+            </div>
+
+            <div class="doctor-body-area">
+                <div class="doctor-svg-wrapper">
+                    <svg viewBox="0 0 220 270" xmlns="http://www.w3.org/2000/svg" class="doctor-float" id="doctor-svg">
+                        <defs>
+                            <radialGradient id="skinG" cx="50%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#fde8c8"/>
+                                <stop offset="100%" stop-color="#f0c898"/>
+                            </radialGradient>
+                            <radialGradient id="coatG" cx="50%" cy="20%" r="80%">
+                                <stop offset="0%" stop-color="#ffffff"/>
+                                <stop offset="100%" stop-color="#ddeef8"/>
+                            </radialGradient>
+                            <filter id="softShadow" x="-15%" y="-15%" width="130%" height="130%">
+                                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(0,119,182,0.15)"/>
+                            </filter>
+                        </defs>
+
+                        <!-- White coat -->
+                        <path d="M 48 172 Q 42 228 46 262 L 174 262 Q 178 228 172 172 Q 147 166 110 168 Q 73 166 48 172 Z" fill="url(#coatG)" filter="url(#softShadow)"/>
+                        <!-- Coat lapels -->
+                        <path d="M 110 176 L 86 212 L 108 206 Z" fill="#c8dff0" opacity="0.7"/>
+                        <path d="M 110 176 L 134 212 L 112 206 Z" fill="#c8dff0" opacity="0.7"/>
+                        <!-- Shirt -->
+                        <path d="M 96 174 L 110 198 L 124 174" fill="#2d5f8a" opacity="0.35"/>
+
+                        <!-- Stethoscope -->
+                        <path d="M 80 192 Q 71 210 80 226 Q 89 240 108 236" stroke="#0077b6" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <circle cx="108" cy="237" r="7" fill="none" stroke="#0077b6" stroke-width="2.5"/>
+                        <circle cx="108" cy="237" r="3.5" fill="#0077b6"/>
+                        <path d="M 80 192 L 86 178" stroke="#0077b6" stroke-width="3" stroke-linecap="round" fill="none"/>
+                        <path d="M 86 178 L 82 170" stroke="#0077b6" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                        <path d="M 86 178 L 90 170" stroke="#0077b6" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                        <circle cx="82" cy="169" r="3" fill="#0096c7"/>
+                        <circle cx="90" cy="169" r="3" fill="#0096c7"/>
+
+                        <!-- ID Badge -->
+                        <rect x="124" y="194" width="36" height="26" rx="6" fill="#e8f4fb" stroke="#0077b6" stroke-width="1.5"/>
+                        <circle cx="133" cy="202" r="4" fill="#0096c7" opacity="0.7"/>
+                        <rect x="139" y="199" width="16" height="2.5" rx="1.2" fill="#0077b6" opacity="0.7"/>
+                        <rect x="128" y="207" width="26" height="2" rx="1" fill="#0096c7" opacity="0.45"/>
+                        <rect x="128" y="212" width="20" height="2" rx="1" fill="#0096c7" opacity="0.3"/>
+
+                        <!-- Clipboard -->
+                        <rect x="130" y="228" width="38" height="30" rx="6" fill="#f0f8ff" stroke="#b0d4ec" stroke-width="1.5"/>
+                        <rect x="144" y="224" width="10" height="8" rx="3" fill="#0077b6"/>
+                        <rect x="135" y="234" width="28" height="2.5" rx="1.2" fill="#0077b6" opacity="0.6"/>
+                        <rect x="135" y="239" width="22" height="2" rx="1" fill="#0096c7" opacity="0.45"/>
+                        <rect x="135" y="244" width="26" height="2" rx="1" fill="#0a9396" opacity="0.4"/>
+                        <rect x="135" y="249" width="18" height="2" rx="1" fill="#0096c7" opacity="0.3"/>
+
+                        <!-- Neck -->
+                        <rect x="102" y="148" width="16" height="28" rx="6" fill="url(#skinG)"/>
+
+                        <!-- Head -->
+                        <ellipse cx="110" cy="120" rx="46" ry="50" fill="url(#skinG)" filter="url(#softShadow)"/>
+
+                        <!-- Hair -->
+                        <path d="M 64 108 Q 67 62 110 60 Q 153 62 156 108 L 152 94 Q 144 58 110 56 Q 76 58 68 94 Z" fill="#2c3e50"/>
+                        <path d="M 64 108 Q 59 88 66 74" stroke="#2c3e50" stroke-width="10" stroke-linecap="round" fill="none"/>
+                        <path d="M 156 108 Q 161 88 154 74" stroke="#2c3e50" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+                        <!-- Ears -->
+                        <ellipse cx="64" cy="120" rx="10" ry="13" fill="url(#skinG)"/>
+                        <ellipse cx="156" cy="120" rx="10" ry="13" fill="url(#skinG)"/>
+
+                        <!-- Glasses -->
+                        <rect x="72" y="110" width="26" height="17" rx="8" fill="none" stroke="#2d5f8a" stroke-width="2"/>
+                        <rect x="106" y="110" width="26" height="17" rx="8" fill="none" stroke="#2d5f8a" stroke-width="2"/>
+                        <line x1="98" y1="118" x2="106" y2="118" stroke="#2d5f8a" stroke-width="2"/>
+                        <line x1="70" y1="117" x2="60" y2="115" stroke="#2d5f8a" stroke-width="2"/>
+                        <line x1="132" y1="117" x2="146" y2="115" stroke="#2d5f8a" stroke-width="2"/>
+                        <!-- Lens tint -->
+                        <rect x="73" y="111" width="24" height="15" rx="7" fill="#caf0f8" opacity="0.35"/>
+                        <rect x="107" y="111" width="24" height="15" rx="7" fill="#caf0f8" opacity="0.35"/>
+
+                        <!-- Eyes -->
+                        <g class="eye-l">
+                            <ellipse cx="85" cy="118" rx="7" ry="6" fill="#2c3e50"/>
+                            <circle cx="87" cy="116" r="2.2" fill="white" opacity="0.65"/>
+                        </g>
+                        <g class="eye-r">
+                            <ellipse cx="119" cy="118" rx="7" ry="6" fill="#2c3e50"/>
+                            <circle cx="121" cy="116" r="2.2" fill="white" opacity="0.65"/>
+                        </g>
+
+                        <!-- Nose -->
+                        <path d="M 107 130 Q 110 138 113 130" stroke="#d4a574" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+                        <!-- Mouth -->
+                        <path id="doctor-mouth" d="M 96 144 Q 110 153 124 144" stroke="#2c3e50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                        <!-- Cheeks -->
+                        <ellipse cx="70" cy="131" rx="10" ry="7" fill="rgba(240,100,100,0.12)"/>
+                        <ellipse cx="150" cy="131" rx="10" ry="7" fill="rgba(240,100,100,0.12)"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="speech-area">
+                <div class="speech-bubble" id="speech-bubble">
+                    <span class="bubble-idle">Awaiting patient scan...</span>
+                </div>
+                <div class="action-badge" id="action-badge"></div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT PANEL ── -->
+        <div class="right-panel">
+
+            <!-- Scan card -->
+            <div class="card scan-card" id="scan-card">
+                <div class="card-header">
+                    <div class="card-header-icon" style="background:var(--teal);">
+                        <span style="font-size:18px; color:white;">🫆</span>
+                    </div>
+                    <h2>Fingerprint Scanner</h2>
+                </div>
+                <div class="scan-body">
+                    <div class="scan-finger-icon">🫆</div>
+                    <div class="scan-text">
+                        <h3>Ready to Scan</h3>
+                        <p id="scan-status-text">Place your finger on the sensor below to begin</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient card -->
+            <div class="card patient-card" id="patient-card">
+                <div class="card-header">
+                    <div class="card-header-icon" style="background:var(--teal);">
+                        <span style="font-size:18px; color:white;">🪪</span>
+                    </div>
+                    <h2>Patient Verified</h2>
+                </div>
+                <div class="patient-body">
+                    <div class="patient-row">
+                        <div class="patient-avatar" id="patient-avatar">–</div>
+                        <div class="patient-info">
+                            <h3 id="patient-name">–</h3>
+                            <p>✅ Identity Confirmed</p>
+                        </div>
+                    </div>
+                    <div class="history-box">
+                        <div class="history-label">⚠️ Medical History on File</div>
+                        <p id="patient-history-text">–</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Symptom section -->
+            <div class="card symptom-section" id="symptom-section">
+                <div class="card-header">
+                    <div class="card-header-icon" style="background:var(--blue);">
+                        <span style="font-size:18px; color:white;">🩺</span>
+                    </div>
+                    <h2>Select Your Symptoms</h2>
+                </div>
+                <div class="symptom-body">
+                    <div class="symptom-grid">
+                        <div class="symptom-chip" onclick="toggleChip(this,'Fever')">
+                            <span class="chip-emoji">🌡️</span> Fever
+                            <div class="chip-check"></div>
+                        </div>
+                        <div class="symptom-chip" onclick="toggleChip(this,'Headache')">
+                            <span class="chip-emoji">🤕</span> Headache
+                            <div class="chip-check"></div>
+                        </div>
+                        <div class="symptom-chip" onclick="toggleChip(this,'Cough')">
+                            <span class="chip-emoji">😮‍💨</span> Cough
+                            <div class="chip-check"></div>
+                        </div>
+                        <div class="symptom-chip" onclick="toggleChip(this,'Stomach Ache')">
+                            <span class="chip-emoji">🤢</span> Stomach Ache
+                            <div class="chip-check"></div>
+                        </div>
+                        <div class="symptom-chip" onclick="toggleChip(this,'Chest Pain')">
+                            <span class="chip-emoji">💔</span> Chest Pain
+                            <div class="chip-check"></div>
+                        </div>
+                        <div class="symptom-chip" onclick="toggleChip(this,'Allergy Breakout')">
+                            <span class="chip-emoji">🤧</span> Allergy Breakout
+                            <div class="chip-check"></div>
+                        </div>
+                    </div>
+                    <button class="btn-analyze" id="analyze-btn" onclick="submitToAI()">
+                        🧠 &nbsp; Analyze & Diagnose
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ESSENTIALS BAR -->
+    <div class="essentials-bar">
+        <span class="essentials-label">Quick&nbsp;Essentials</span>
+        <div class="essentials-btns">
+            <button class="btn-essential" onclick="dispense('Sanitary Pad')">
+                <span class="ess-icon">🩸</span> Sanitary Pad
+            </button>
+            <button class="btn-essential" onclick="dispense('Band-Aid')">
+                <span class="ess-icon">🩹</span> Band-Aid
+            </button>
+        </div>
+        <button class="btn-reset" onclick="resetKiosk()">↺ &nbsp;New Patient</button>
+    </div>
+
+    <div class="footer">MEDI-LINK v2.0 &nbsp;·&nbsp; For assistance, contact the campus health centre</div>
+</div>
+
+<script>
+    let currentUser = null;
+    let mouthInterval = null;
+    let scanPollInterval = null;
+
+    // ── TTS: send text to server for pyttsx3 speech ──
+    function speakText(text) {
+        fetch('/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+        }).catch(console.error);
+    }
+
+    // Clock
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent =
+            now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Symptom chip toggle
+    function toggleChip(el, value) {
+        el.classList.toggle('selected');
+        el.dataset.value = value;
+    }
+
+    // Mouth animation
+    function startTalking() {
+        clearInterval(mouthInterval);
+        const mouth = document.getElementById('doctor-mouth');
+        let open = false;
+        mouthInterval = setInterval(() => {
+            open = !open;
+            mouth.setAttribute('d', open
+                ? 'M 96 144 Q 110 160 124 144'
+                : 'M 96 144 Q 110 150 124 144'
+            );
+        }, 180);
+    }
+
+    function stopTalking() {
+        clearInterval(mouthInterval);
+        document.getElementById('doctor-mouth').setAttribute('d', 'M 96 144 Q 110 153 124 144');
+    }
+
+    // Doctor speech
+    function setDoctorSpeech(text, type = 'idle', noSpeak = false) {
+        const bubble = document.getElementById('speech-bubble');
+        bubble.innerHTML = '';
+        bubble.className = 'speech-bubble';
+
+        if (type === 'typing') {
+            bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+            startTalking();
+            return;
+        }
+
+        const span = document.createElement('span');
+        span.className = type === 'idle' ? 'bubble-idle' : `bubble-${type}`;
+        span.textContent = text;
+        bubble.appendChild(span);
+
+        if (type !== 'idle') {
+            startTalking();
+            setTimeout(stopTalking, Math.min(text.length * 55, 7000));
+            if (!noSpeak) speakText(text);   // 🔊 speak via pyttsx3
+        } else {
+            stopTalking();
+        }
+    }
+
+    // Action badge
+    function setActionBadge(action) {
+        const badge = document.getElementById('action-badge');
+        badge.className = 'action-badge';
+        if (action === 'medicine') {
+            badge.classList.add('medicine');
+            badge.textContent = '💊  Medicine Recommended — Please collect from dispensing tray';
+            badge.style.display = 'block';
+        } else if (action === 'doctor') {
+            badge.classList.add('doctor');
+            badge.textContent = '🏥  Please Visit the Campus Health Centre';
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // Dispense
+    function dispense(item) {
+        fetch('/dispense_essential', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item })
+        });
+        setDoctorSpeech(`${item} is being dispensed. Please collect from the tray below.`, 'medicine');
+    }
+
+    // Poll for scan
+    function startScanPoll() {
+        if (scanPollInterval) return; // already running
+        scanPollInterval = setInterval(() => {
+            if (currentUser) return; // already got a user, do nothing
+            fetch('/check_scan')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.name && data.name !== 'Guest' && data.name !== 'Error') {
+                        currentUser = data;           // set BEFORE showPatient so double-fire is blocked
+                        clearInterval(scanPollInterval);
+                        scanPollInterval = null;
+                        showPatient(data);
+                    } else if (data.name === 'Guest') {
+                        document.getElementById('scan-status-text').textContent = '⚠️ ID not recognised. Please try again.';
+                    }
+                })
+                .catch(console.error);
+        }, 2000);
+    }
+    startScanPoll();
+
+    function showPatient(data) {
+        document.getElementById('scan-status-text').textContent = '✅ Patient identity verified successfully';
+        document.getElementById('patient-avatar').textContent = data.name[0].toUpperCase();
+        document.getElementById('patient-name').textContent = data.name;
+        document.getElementById('patient-history-text').textContent = data.history;
+        document.getElementById('patient-card').classList.add('visible');
+        document.getElementById('symptom-section').classList.add('visible');
+        setDoctorSpeech(`Hello ${data.name}! I have your medical file ready. Please tap on your current symptoms and I will advise you.`, 'medicine');
+    }
+
+    // AI submit
+    function submitToAI() {
+        const symptoms = [...document.querySelectorAll('.symptom-chip.selected')].map(el => el.dataset.value);
+        if (symptoms.length === 0) {
+            setDoctorSpeech('Please select at least one symptom so I can help you.', 'idle');
+            return;
+        }
+
+        const btn = document.getElementById('analyze-btn');
+        btn.disabled = true;
+        btn.textContent = '⏳  Analyzing your symptoms...';
+        setDoctorSpeech('', 'typing');
+        setActionBadge('none');
+
+        fetch('/ask_ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: currentUser.name, history: currentUser.history, symptoms })
+        })
+        .then(r => r.json())
+        .then(data => {
+            setDoctorSpeech(data.reply, data.action === 'doctor' ? 'doctor' : 'medicine', true); // server already spoke
+            setActionBadge(data.action);
+            btn.disabled = false;
+            btn.innerHTML = '🧠 &nbsp; Analyze & Diagnose';
+        })
+        .catch(() => {
+            setDoctorSpeech('AI is offline. Please visit the health centre directly.', 'doctor');
+            setActionBadge('doctor');
+            btn.disabled = false;
+            btn.innerHTML = '🧠 &nbsp; Analyze & Diagnose';
+        });
+    }
+
+    // Reset
+    function resetKiosk() {
+        currentUser = null;
+        // Clear any existing poll so we don't accumulate multiple intervals
+        if (scanPollInterval) {
+            clearInterval(scanPollInterval);
+            scanPollInterval = null;
+        }
+        document.getElementById('scan-status-text').textContent = 'Place your finger on the sensor below to begin';
+        document.getElementById('patient-card').classList.remove('visible');
+        document.getElementById('symptom-section').classList.remove('visible');
+        document.querySelectorAll('.symptom-chip').forEach(c => c.classList.remove('selected'));
+        const btn = document.getElementById('analyze-btn');
+        btn.disabled = false;
+        btn.innerHTML = '🧠 &nbsp; Analyze & Diagnose';
+        setActionBadge('none');
+        setDoctorSpeech('Awaiting patient scan...', 'idle');
+        stopTalking();
+        startScanPoll(); // restart the poll cleanly
+    }
+</script>
+</body>
+</html>
