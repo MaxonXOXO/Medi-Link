@@ -1,6 +1,25 @@
 {
-    "1": {"name": "Gautham", "age": 18, "history": "Allergic to Aspirin, Mild Asthma"},
-    "2": {"name": "Nizzzz", "age": 20, "history": "No known allergies, Type 1 Diabetes"},
-    "3": {"name": "Gill", "age": 19, "history": "Sensitive to Penicillin"}
-    
+  "14": {
+    "name": "Gautham",
+    "age": 18,
+    "history": "Allergic to Aspirin, Mild Asthma"
+  },
+  "2": {
+    "name": "Yaseen",
+    "age": 20,
+    "history": "No known allergies, Type 1 Diabetes"
+  },
+  "3": {
+    "name": "Gill",
+    "age": 19,
+    "history": "Sensitive to Penicillin "
+  },
+  "5": {
+    "name": "Amir Muhammad",
+    "history": "Allergy girls & eggs"
+  },
+  "6": {
+    "name": "Sebastian",
+    "history": "Allergic to lactose"
+  }
 }

@@ -18,27 +18,21 @@ def _tts_worker():
     """Single long-lived thread that owns the pyttsx3 engine."""
     engine = None
     
-    # Initialize engine with retries
     for attempt in range(3):
         try:
             engine = pyttsx3.init()
             engine.setProperty('rate', 170)
             engine.setProperty('volume', 1.0)
-            
-            # Set voice (optional - remove if causes issues)
             try:
                 voices = engine.getProperty('voices')
                 if voices:
                     engine.setProperty('voice', voices[0].id)
             except:
-                pass  # Skip voice selection if it fails
-            
-            # Test the engine with empty speak
+                pass
             engine.say("")
             engine.runAndWait()
             print("✅ TTS engine initialized successfully")
             break
-            
         except Exception as e:
             print(f"⚠️ TTS init attempt {attempt + 1} failed: {e}")
             time.sleep(1)
@@ -58,7 +52,6 @@ def _tts_worker():
                 _tts_queue.task_done()
                 continue
             
-            # Small delay to prevent overlapping speech
             time.sleep(0.2)
             
             try:
@@ -72,7 +65,6 @@ def _tts_worker():
                 consecutive_errors += 1
                 print(f"⚠️ TTS error (attempt {consecutive_errors}): {e}")
                 
-                # Try to reinitialize engine after 2 consecutive errors
                 if consecutive_errors >= 2:
                     print("🔄 Reinitializing TTS engine...")
                     try:
@@ -80,13 +72,10 @@ def _tts_worker():
                             engine.stop()
                     except:
                         pass
-                    
-                    # Create new engine
                     try:
                         new_engine = pyttsx3.init()
                         new_engine.setProperty('rate', 170)
                         new_engine.setProperty('volume', 1.0)
-                        
                         with _tts_lock:
                             engine = new_engine
                         consecutive_errors = 0
@@ -103,23 +92,18 @@ def _tts_worker():
             print(f"❌ TTS worker error: {e}")
             time.sleep(1)
 
-# Start TTS worker thread (not daemon so it can clean up properly)
 _tts_thread = threading.Thread(target=_tts_worker, daemon=False)
 _tts_thread.start()
-time.sleep(1)  # Give engine time to initialize
+time.sleep(1)
 
 def speak_async(text, priority=False):
     """Queue text for speech. priority=True clears any pending items first."""
     if not text:
         return
-    
-    # Clean up the text (remove action tags)
     clean = text.replace('[ACTION: MEDICINE]', '').replace('[ACTION: DOCTOR]', '').strip()
     if not clean:
         return
-    
     if priority:
-        # Clear queue for priority messages
         cleared = 0
         while not _tts_queue.empty():
             try:
@@ -130,7 +114,6 @@ def speak_async(text, priority=False):
                 break
         if cleared:
             print(f"🗑️ Cleared {cleared} pending TTS messages")
-    
     _tts_queue.put(clean)
     print(f"📝 Queued: {clean[:50]}...")
 
@@ -138,11 +121,9 @@ def speak_async(text, priority=False):
 SERIAL_PORT = 'COM3'  # <--- CHANGE THIS TO YOUR ESP32 PORT
 BAUD_RATE = 115200
 
-# Global variable to hold the scanned user ID
 last_scanned_uid = None
 ser = None
 
-# --- SETUP SERIAL CONNECTION ---
 try:
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
     time.sleep(2)
@@ -150,7 +131,6 @@ try:
 except Exception as e:
     print(f"⚠️ Warning: Could not connect to ESP32 on {SERIAL_PORT}. Running without hardware triggers.")
 
-# --- BACKGROUND THREAD: LISTEN TO ESP32 ---
 def listen_to_esp32():
     global last_scanned_uid
     while True:
@@ -158,7 +138,6 @@ def listen_to_esp32():
             try:
                 line = ser.readline().decode('utf-8').strip()
                 print(f"[ESP32 RAW]: '{line}'")
-
                 if "USER:" in line:
                     parts = line.split(":")
                     if len(parts) > 1:
@@ -168,11 +147,9 @@ def listen_to_esp32():
                 print(f"❌ Serial Error: {e}")
         time.sleep(0.1)
 
-# Start the listener thread
 thread = threading.Thread(target=listen_to_esp32, daemon=True)
 thread.start()
 
-# --- HELPER FUNCTIONS ---
 def get_user(uid):
     try:
         with open('data.json') as f:
@@ -209,9 +186,24 @@ def ask_ai():
     user_name = data.get('name', 'Guest')
     user_history = data.get('history', 'No prior history')
     selected_symptoms = data.get('symptoms', [])
+    vitals = data.get('vitals', {})
 
     symptom_string = ", ".join(selected_symptoms)
-    full_prompt = f"Patient: {user_name}. History: {user_history}. Symptoms: {symptom_string}."
+
+    # Build vitals string — only include values that were provided
+    vitals_parts = []
+    if vitals.get('blood_pressure'): vitals_parts.append(f"BP: {vitals['blood_pressure']}")
+    if vitals.get('temperature'):    vitals_parts.append(f"Temp: {vitals['temperature']}")
+    if vitals.get('blood_sugar'):    vitals_parts.append(f"Blood sugar: {vitals['blood_sugar']}")
+    if vitals.get('weight'):         vitals_parts.append(f"Weight: {vitals['weight']}")
+    vitals_string = ", ".join(vitals_parts) if vitals_parts else "Not provided"
+
+    full_prompt = (
+        f"Patient: {user_name}. "
+        f"Medical history: {user_history}. "
+        f"Vitals — {vitals_string}. "
+        f"Symptoms: {symptom_string}."
+    )
 
     try:
         response = ollama.chat(model='llama3.2:1b', messages=[
@@ -222,25 +214,35 @@ def ask_ai():
                     "Speak directly and confidently as a real doctor would — never say you are an AI, never add disclaimers, never suggest consulting another doctor unless the action is [ACTION: DOCTOR]. "
                     "Rules: "
                     "1. Check the patient history for allergies before recommending any medication — never suggest a drug they are allergic to. "
-                    "2. If symptoms are mild and safe to treat, name the exact OTC medication to take (e.g. Paracetamol 500mg), give a brief instruction, and end your reply with [ACTION: MEDICINE]. "
-                    "3. If symptoms are severe (chest pain, breathing difficulty) or there is an allergy risk, give a one-line reason and end with [ACTION: DOCTOR]. "
-                    "4. Be concise — maximum 2 sentences. No preamble, no disclaimers, no 'I am not a doctor' language. Write as if you are the doctor."
+                    "2. Analyse the vitals if provided — flag abnormal values (e.g. high BP >140/90, high temp >38°C, high blood sugar >140 mg/dL). "
+                    "3. If symptoms are mild and safe to treat, name the exact OTC medication to take (e.g. Paracetamol 500mg), give a brief instruction, and end your reply with [ACTION: MEDICINE]. "
+                    "4. If symptoms are severe (chest pain, breathing difficulty), vitals are critically abnormal, or there is an allergy risk, give a one-line reason and end with [ACTION: DOCTOR]. "
+                    "5. Be concise — maximum 3 sentences. No preamble, no disclaimers. Write as if you are the doctor."
                 )
             },
             {'role': 'user', 'content': full_prompt}
         ])
 
         reply_text = response['message']['content']
-
+        
+        # Convert to lowercase to make matching easier and catch AI formatting mistakes
+        reply_lower = reply_text.lower()
+        
         action = "none"
-        if "[ACTION: MEDICINE]" in reply_text:
+        
+        # Check for the medicine tag OR common medicine names
+        if "action: medicine" in reply_lower or "paracetamol" in reply_lower or "ibuprofen" in reply_lower:
             action = "medicine"
             if ser:
-                ser.write(b'M')
-        elif "[ACTION: DOCTOR]" in reply_text:
+                ser.write(b'M')   # Trigger medicine relay (GPIO 19)
+                
+        # FIXED INDENTATION: This must align with the 'if' above!
+        elif "action: doctor" in reply_lower or "doctor" in reply_lower or "hospital" in reply_lower:
             action = "doctor"
+            if ser:
+                ser.write(b'P4')   # Trigger Doctor referral 
 
-        # Speak the AI reply
+        # Speak the AI reply (priority clears any queued greeting)
         speak_async(reply_text, priority=True)
 
         return jsonify({"reply": reply_text, "action": action})
@@ -257,12 +259,53 @@ def speak():
         speak_async(text)
     return jsonify({"status": "ok"})
 
+@app.route('/register_patient', methods=['POST'])
+def register_patient():
+    """Write a new patient record into data.json."""
+    data = request.json
+    name    = data.get('name', '').strip()
+    history = data.get('history', 'No known conditions').strip()
+    fp_id   = str(data.get('fingerprint_id', '')).strip()
+
+    if not name or not fp_id:
+        return jsonify({"status": "error", "error": "Name and fingerprint ID are required."}), 400
+
+    try:
+        # Load existing database (or start fresh)
+        try:
+            with open('data.json', 'r') as f:
+                db = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            db = {}
+
+        if fp_id in db:
+            return jsonify({"status": "error", "error": f"Fingerprint ID {fp_id} is already registered to {db[fp_id]['name']}."}), 409
+
+        db[fp_id] = {"name": name, "history": history}
+
+        with open('data.json', 'w') as f:
+            json.dump(db, f, indent=2)
+
+        print(f"✅ Registered new patient: {name} (ID: {fp_id})")
+        return jsonify({"status": "ok"})
+
+    except Exception as e:
+        print(f"❌ Registration error: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
+
+@app.route('/reset_kiosk', methods=['POST'])
+def reset_kiosk():
+    """Called when the New Patient button is pressed — plays 002.mp3 on DFPlayer."""
+    if ser:
+        ser.write(b'P2')  # DFPlayer: play 002.mp3
+    return jsonify({"status": "ok"})
+
 @app.route('/dispense_essential', methods=['POST'])
 def dispense_essential():
     item = request.json.get('item')
     print(f"🏥 Dispensing Essential: {item}")
     if ser:
-        ser.write(b'E')
+        ser.write(b'E')  # Trigger essentials relay (GPIO 18)
     return jsonify({"status": "success"})
 
 @app.route('/tts_status', methods=['GET'])
@@ -274,5 +317,6 @@ def tts_status():
     })
 
 if __name__ == '__main__':
-    # Note: use_reloader=False is important for multi-threading
+    # use_reloader=False is critical — reloader spawns a second process
+    # which starts a second TTS thread and breaks pyttsx3
     app.run(debug=True, port=5000, use_reloader=False)

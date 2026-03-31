@@ -440,6 +440,161 @@
 
         .btn-reset:hover { border-color: var(--red); background: var(--red-lt); color: var(--red); }
 
+        /* ── VITALS SECTION ─────────────────────── */
+        .vitals-section { display: none; }
+        .vitals-section.visible { display: block; }
+        .vitals-section .card-header { background: #f0faf5; border-radius: 18px 18px 0 0; }
+        .vitals-section .card-header-icon { background: var(--green); }
+
+        .vitals-body { padding: 18px 24px 22px; }
+
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 0;
+        }
+
+        .vital-field { display: flex; flex-direction: column; gap: 6px; }
+
+        .vital-label {
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text2);
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .vital-input {
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 16px; font-weight: 700;
+            color: var(--text);
+            background: var(--bg);
+            transition: border-color 0.18s;
+            width: 100%;
+        }
+
+        .vital-input:focus {
+            outline: none;
+            border-color: var(--green);
+            background: #f0faf5;
+        }
+
+        .vital-input::placeholder { color: #a0b4c0; font-weight: 600; }
+
+        /* ── REGISTER MODAL ──────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+
+        .modal-overlay.visible { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 36px;
+            width: 480px; max-width: 95vw;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease both;
+        }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 20px; font-weight: 800; color: var(--text);
+        }
+
+        .modal-title-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: var(--teal-lt); border: 2px solid var(--teal);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 2px solid var(--border); background: var(--bg);
+            cursor: pointer; font-size: 18px; color: var(--text2);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.18s;
+        }
+
+        .modal-close:hover { border-color: var(--red); background: var(--red-lt); color: var(--red); }
+
+        .reg-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+
+        .reg-label {
+            font-size: 12px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text2);
+        }
+
+        .reg-input {
+            padding: 14px 16px;
+            border: 2px solid var(--border); border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px; font-weight: 600; color: var(--text);
+            background: var(--bg); transition: border-color 0.18s; width: 100%;
+        }
+
+        .reg-input:focus { outline: none; border-color: var(--teal); background: var(--teal-lt); }
+        .reg-input::placeholder { color: #a0b4c0; }
+
+        textarea.reg-input { resize: vertical; min-height: 80px; }
+
+        .reg-id-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px;
+            background: var(--amber-lt); border: 2px solid var(--amber);
+            border-radius: 12px; margin-bottom: 20px;
+            font-size: 14px; font-weight: 700; color: #7a4a10;
+        }
+
+        .reg-id-row span { font-size: 20px; }
+
+        .btn-register-submit {
+            width: 100%; padding: 18px;
+            background: var(--teal); border: none; border-radius: 14px;
+            color: white; font-family: 'Nunito', sans-serif;
+            font-size: 17px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 20px rgba(10,147,150,0.3);
+        }
+
+        .btn-register-submit:hover { background: #0a7a7d; transform: translateY(-2px); }
+        .btn-register-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .reg-success {
+            display: none;
+            margin-top: 16px; padding: 14px 18px;
+            background: var(--green-lt); border: 2px solid var(--green);
+            border-radius: 12px; color: var(--green);
+            font-weight: 700; font-size: 15px; text-align: center;
+        }
+
+        .btn-register-open {
+            padding: 20px 22px; min-height: 72px;
+            border: 2px solid var(--teal); border-radius: 16px;
+            background: var(--teal-lt); color: var(--teal);
+            font-family: 'Nunito', sans-serif; font-size: 17px;
+            font-weight: 700; cursor: pointer;
+            transition: all 0.18s; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-register-open:hover { background: var(--teal); color: white; box-shadow: 0 6px 18px rgba(10,147,150,0.3); }
+
         /* ── FOOTER ──────────────────────────────── */
         .footer {
             text-align: center; font-size: 12px;
@@ -714,6 +869,36 @@
                 </div>
             </div>
 
+            <!-- Vitals section -->
+            <div class="card vitals-section" id="vitals-section">
+                <div class="card-header">
+                    <div class="card-header-icon" style="background:var(--green);">
+                        <span style="font-size:18px; color:white;">📊</span>
+                    </div>
+                    <h2>Enter Vitals &nbsp;<span style="font-weight:500;font-size:12px;color:var(--text2);text-transform:none;letter-spacing:0">(optional — leave blank to skip)</span></h2>
+                </div>
+                <div class="vitals-body">
+                    <div class="vitals-grid">
+                        <div class="vital-field">
+                            <label class="vital-label">🩸 Blood Pressure</label>
+                            <input class="vital-input" id="vital-bp" type="text" placeholder="e.g. 120/80 mmHg">
+                        </div>
+                        <div class="vital-field">
+                            <label class="vital-label">🌡️ Temperature</label>
+                            <input class="vital-input" id="vital-temp" type="text" placeholder="e.g. 37.2 °C">
+                        </div>
+                        <div class="vital-field">
+                            <label class="vital-label">🍬 Blood Sugar</label>
+                            <input class="vital-input" id="vital-sugar" type="text" placeholder="e.g. 110 mg/dL">
+                        </div>
+                        <div class="vital-field">
+                            <label class="vital-label">⚖️ Weight</label>
+                            <input class="vital-input" id="vital-weight" type="text" placeholder="e.g. 68 kg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -728,10 +913,51 @@
                 <span class="ess-icon">🩹</span> Band-Aid
             </button>
         </div>
+        <button class="btn-register-open" onclick="openRegister()">➕ &nbsp;Register Patient</button>
         <button class="btn-reset" onclick="resetKiosk()">↺ &nbsp;New Patient</button>
     </div>
 
     <div class="footer">MEDI-LINK v2.0 &nbsp;·&nbsp; For assistance, contact the campus health centre</div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="register-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">
+                <div class="modal-title-icon">🪪</div>
+                Register New Patient
+            </div>
+            <button class="modal-close" onclick="closeRegister()">✕</button>
+        </div>
+
+        <div class="reg-field">
+            <label class="reg-label">Full Name</label>
+            <input class="reg-input" id="reg-name" type="text" placeholder="Patient's full name">
+        </div>
+
+        <div class="reg-field">
+            <label class="reg-label">Medical History / Known Conditions / Allergies</label>
+            <textarea class="reg-input" id="reg-history" placeholder="e.g. Diabetic, allergic to Penicillin, hypertension..."></textarea>
+        </div>
+
+        <div class="reg-field">
+            <label class="reg-label">Fingerprint ID (from sensor)</label>
+            <input class="reg-input" id="reg-id" type="number" min="1" placeholder="e.g. 1, 2, 3 ...">
+        </div>
+
+        <div class="reg-id-row">
+            <span>ℹ️</span>
+            Enroll the fingerprint on the sensor first using the enrollment sketch, then enter the assigned ID number above.
+        </div>
+
+        <button class="btn-register-submit" id="reg-submit-btn" onclick="submitRegistration()">
+            ✅ &nbsp; Save Patient Record
+        </button>
+        <div class="reg-success" id="reg-success">
+            ✅ Patient registered successfully! They can now scan to log in.
+        </div>
+    </div>
 </div>
 
 <script>
@@ -864,7 +1090,8 @@
         document.getElementById('patient-history-text').textContent = data.history;
         document.getElementById('patient-card').classList.add('visible');
         document.getElementById('symptom-section').classList.add('visible');
-        setDoctorSpeech(`Hello ${data.name}! I have your medical file ready. Please tap on your current symptoms and I will advise you.`, 'medicine');
+        document.getElementById('vitals-section').classList.add('visible');
+        setDoctorSpeech(`Hello ${data.name}! I have your medical file ready. Please enter your vitals, tap your symptoms, and I will advise you.`, 'medicine');
     }
 
     // AI submit
@@ -875,6 +1102,17 @@
             return;
         }
 
+        // Collect vitals (only include filled-in ones)
+        const vitals = {};
+        const bp     = document.getElementById('vital-bp').value.trim();
+        const temp   = document.getElementById('vital-temp').value.trim();
+        const sugar  = document.getElementById('vital-sugar').value.trim();
+        const weight = document.getElementById('vital-weight').value.trim();
+        if (bp)     vitals.blood_pressure = bp;
+        if (temp)   vitals.temperature    = temp;
+        if (sugar)  vitals.blood_sugar    = sugar;
+        if (weight) vitals.weight         = weight;
+
         const btn = document.getElementById('analyze-btn');
         btn.disabled = true;
         btn.textContent = '⏳  Analyzing your symptoms...';
@@ -884,11 +1122,11 @@
         fetch('/ask_ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: currentUser.name, history: currentUser.history, symptoms })
+            body: JSON.stringify({ name: currentUser.name, history: currentUser.history, symptoms, vitals })
         })
         .then(r => r.json())
         .then(data => {
-            setDoctorSpeech(data.reply, data.action === 'doctor' ? 'doctor' : 'medicine', true); // server already spoke
+            setDoctorSpeech(data.reply, data.action === 'doctor' ? 'doctor' : 'medicine', true);
             setActionBadge(data.action);
             btn.disabled = false;
             btn.innerHTML = '🧠 &nbsp; Analyze & Diagnose';
@@ -903,8 +1141,8 @@
 
     // Reset
     function resetKiosk() {
+        fetch('/reset_kiosk', { method: 'POST' }).catch(console.error);
         currentUser = null;
-        // Clear any existing poll so we don't accumulate multiple intervals
         if (scanPollInterval) {
             clearInterval(scanPollInterval);
             scanPollInterval = null;
@@ -912,15 +1150,78 @@
         document.getElementById('scan-status-text').textContent = 'Place your finger on the sensor below to begin';
         document.getElementById('patient-card').classList.remove('visible');
         document.getElementById('symptom-section').classList.remove('visible');
+        document.getElementById('vitals-section').classList.remove('visible');
         document.querySelectorAll('.symptom-chip').forEach(c => c.classList.remove('selected'));
+        // Clear vitals inputs
+        ['vital-bp','vital-temp','vital-sugar','vital-weight'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
         const btn = document.getElementById('analyze-btn');
         btn.disabled = false;
         btn.innerHTML = '🧠 &nbsp; Analyze & Diagnose';
         setActionBadge('none');
         setDoctorSpeech('Awaiting patient scan...', 'idle');
         stopTalking();
-        startScanPoll(); // restart the poll cleanly
+        startScanPoll();
     }
+
+    // Register modal
+    function openRegister() {
+        document.getElementById('register-modal').classList.add('visible');
+        document.getElementById('reg-success').style.display = 'none';
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-history').value = '';
+        document.getElementById('reg-id').value = '';
+        document.getElementById('reg-submit-btn').disabled = false;
+        document.getElementById('reg-submit-btn').innerHTML = '✅ &nbsp; Save Patient Record';
+    }
+
+    function closeRegister() {
+        document.getElementById('register-modal').classList.remove('visible');
+    }
+
+    function submitRegistration() {
+        const name    = document.getElementById('reg-name').value.trim();
+        const history = document.getElementById('reg-history').value.trim();
+        const fpId    = document.getElementById('reg-id').value.trim();
+
+        if (!name || !fpId) {
+            alert('Please fill in the patient name and fingerprint ID.');
+            return;
+        }
+
+        const btn = document.getElementById('reg-submit-btn');
+        btn.disabled = true;
+        btn.innerHTML = '⏳ &nbsp; Saving...';
+
+        fetch('/register_patient', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, history: history || 'No known conditions', fingerprint_id: fpId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                document.getElementById('reg-success').style.display = 'block';
+                btn.innerHTML = '✅ &nbsp; Saved!';
+                setTimeout(closeRegister, 2200);
+            } else {
+                alert('Error: ' + (data.error || 'Could not save patient.'));
+                btn.disabled = false;
+                btn.innerHTML = '✅ &nbsp; Save Patient Record';
+            }
+        })
+        .catch(() => {
+            alert('Server error. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '✅ &nbsp; Save Patient Record';
+        });
+    }
+
+    // Close modal on overlay click
+    document.getElementById('register-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeRegister();
+    });
 </script>
 </body>
 </html>
